@@ -1,0 +1,11 @@
+digraph pastafarianism {
+ordering=out;
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+Root [fillcolor=orange, fontcolor=black, fontsize=9, label="Ⓜ Root", shape=box, style=filled];
+"Set Key Behavior" [fillcolor=gray, fontcolor=black, fontsize=9, label="Set Key Behavior", shape=ellipse, style=filled];
+Root -> "Set Key Behavior";
+"Read Key Behavior" [fillcolor=gray, fontcolor=black, fontsize=9, label="Read Key Behavior", shape=ellipse, style=filled];
+Root -> "Read Key Behavior";
+}
