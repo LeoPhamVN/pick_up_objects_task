@@ -59,7 +59,7 @@ class CheckObject(py_trees.behaviour.Behaviour):
                 print("set to blackboard: ", resp.message)
                 # Define goal position
                 self.goal = PoseStamped()
-                self.blackboard.goal = destination_dict[self.blackboard.object_name]     
+                self.blackboard.goal = destination_dict[self.blackboard.object_name]   
                 return py_trees.common.Status.SUCCESS
             else:
                 return py_trees.common.Status.FAILURE
@@ -201,7 +201,6 @@ class MoveRobot(py_trees.behaviour.Behaviour):
 
         if np.linalg.norm(self.current_pose[0:2] - np.array([self.goal.pose.position.x, self.goal.pose.position.y])) < 0.35:
             self.logger.debug("  %s [MoveRobot::Update() SUCCESS]" % self.name)
-            self.blackboard.n_points += 1
             return py_trees.common.Status.SUCCESS
         else:
             self.logger.debug("  %s [MoveRobot::Update() RUNNING]" % self.name)
@@ -226,6 +225,8 @@ class SetPoint(py_trees.behaviour.Behaviour):
         super(SetPoint, self).__init__(name)
         self.blackboard = self.attach_blackboard_client(name=self.name)
         self.blackboard.register_key(
+            "n_points", access=py_trees.common.Access.WRITE)
+        self.blackboard.register_key(
             "n_points", access=py_trees.common.Access.READ)
         self.blackboard.register_key(
             "goal", access=py_trees.common.Access.WRITE)
@@ -238,7 +239,8 @@ class SetPoint(py_trees.behaviour.Behaviour):
 
     def update(self):
         # Define point position the robot need to go to
-        self.blackboard.goal = points_list[self.blackboard.n_points]              
+        self.blackboard.goal = points_list[self.blackboard.n_points]   
+        self.blackboard.n_points += 1        
         self.logger.debug("  %s [SetPoint::Update() SUCCESS]" % self.name)
         return py_trees.common.Status.SUCCESS
 
@@ -267,7 +269,7 @@ def create_tree():
         name="n_points_lt_5",
         check=py_trees.common.ComparisonExpression(
             variable="n_points",
-            value=5,
+            value=len(points_list),
             operator=operator.lt
         )
     )
@@ -282,12 +284,12 @@ def create_tree():
         )
     )
     # Behavior checking end condition of the behavior tree
-    check_end = py_trees.composites.Selector(name="check_end", memory=True)
+    check_end = py_trees.composites.Sequence(name="check_end", memory=True)
     check_end.add_children([n_collected_objects_lt_2, n_points_lt_5])
 
     root = py_trees.composites.Sequence(name="Life", memory=True)    
     root.add_children([check_end, set_point, move_to_point, check_object, get_object, move_to_destination, let_object])
-    
+    # py_trees.display.render_dot_tree(root)
     return root
 
 def run(it=200):
@@ -307,8 +309,8 @@ def run(it=200):
 
 if __name__ == "__main__":
     py_trees.logging.level = py_trees.logging.Level.DEBUG
-
-    rospy.init_node("behavior_trees")
+   
+    rospy.init_node('behavior_trees')
 
     # Create behavior tree
     root = create_tree()

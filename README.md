@@ -1,32 +1,25 @@
-# Define a "Pickup objects" task using behavior trees
+# "Pickup objects" task using behavior trees in ROS
 
-This lab uses the turtlebot3 simulator in ROS noetic Gazebo to complete an object collecting task making use of the [py_trees](https://github.com/splintered-reality/py_trees) library.
+This repository encompasses the implementation of a behavior trees node in ROS for a turtlebot3 platform in ROS noetic Gazebo to complete an object collecting task. This work is developed as a component of Lab 02 for the Hands-on Planning course offered by IFROS.
 
+## Contributors
 
-## `py_trees` library
+- Atharva A. Patwe
+- Loc Thanh Pham
 
-This lab uses the [py_trees](https://github.com/splintered-reality/py_trees) library.
-To install the `py_trees` library do:
+## Instructor
 
-```bash
-pip install py_trees
-```
+- Dr. Narcis Palomeras Rovira
 
-You can find information about how to use this library at this [github page](https://github.com/splintered-reality/py_trees).
+## Date
 
-There is also a [tutorial](./notebooks/py_tree_tests.ipynb) included in this package. Check it for a brief introduction.
+March 11, 2024
 
-## Task description
+## Introduction
 
-We have a robot with the follwong behaviors:
+This repository hosts the codebase for a pickup behaviors tree node designed in ROS, crafted as a requisite for the Hands-on Planning course at IFROS. This project utilizes the [py_trees](https://github.com/splintered-reality/py_trees) library.
 
-* `move`: The robot move to the *x*, *y* location. This behavior is provided by the node [turtlebot_controller_node.py](./src/turtlebot_controller_node.py) from this package. 
-* `check_object`: A service provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is close to the robot and `True` plus the object's name if an object is close to it.
-* `get_object`: A service provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is close to the robot and `True` if an object is close to it. It also moves this object over the robot.
-* `let_object`: A service provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is over the robot and `True` if an object is over it. It also moves this object to the floor.
-
-
-Using these behaviors, you have to implement the following task.
+Using these behavior tree, we implement the following task.
 
 The robot has to navigate to a list of points and in each one it has to check if there is an object on it. If there is an object, it picks it up and takes it to `(-1.5, -1.5)` if the object was a `beer` can or to `(1.5, 1.5)` if the object was a `coke` can. Once there, the robot leaves the object and goes to the next point. The task ends once two objects have been collected or all provided points have been explored. The points where the objects can be found are:
 
@@ -36,64 +29,94 @@ The robot has to navigate to a list of points and in each one it has to check if
 * (-0.5, 1.25)
 * (-1.25, 0.5)
 
-An execution example can be found [here](http://eia.udg.edu/~npalomer/imgs/robotica/BT.mp4). 
+This package is developed and tested in ROS Noetic on Ubuntu 20.04 machines.
 
-> Notice that in the video a task planning node is used instead of a simple controller as the one provided in this package.
+## Setting up
 
-<p align="center"> <img src="./media/env.png" width=400px/> </p>
+### Prerequisites
+This lab uses the [py_trees](https://github.com/splintered-reality/py_trees) library.
+To install the `py_trees` library do:
 
-### Included code
+```bash
+pip install py_trees
+```
 
-Three code files are included: `turtlebot_controller_node.py`, `manage_objects_node.py` and `pickup_behaviors_no.py`:
+To implement the pick up objects task package perform following steps:
+1. Install all the turtlebot packages from [here](https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gazebo-simulation)
+2. Clone this repository as a package in the src folder
+3. Build the catkin workspace : ```catkin build``` or ```catkin_make```
+4. Source the setup.bash file: ```source devel\setup.bash```
+5. Export turtlebot model: ```export TURTLEBOT3_MODEL=burger```
 
-* `turtlebot_controller_node.py`: This file is a ROS node that contains a basic *move to point* controller. When a `PoseStamped` message is published to the topic `/move_base_simple/goal`, this controller moves the turtlebot to this position.
-* `manage_objects.py`: This file is a ROS node that contain the following ROS services:
-    * `check_object`
-    * `get_object`
-    * `let_object`
-* `pickup_behaviors.py`: Contains 3 behaviors ready to be called from the `py_trees` library. Modify this file to add the necessary additional behaviors.
-    * `CheckObject`: Behavior for calling `check_object` task and if True, store object name to Blackboard
-    * `GetObject`: Behavior for calling `get_object`
-    * `LetObject`: Behavior for calling `let_object`
+Task 1: Free map without obstacles
+1. Launch the pick up objects task 1 launch file present in the launch folder: ```roslaunch pick_up_objects_task pick_up_objects_task_1.launch```
+2. Run the pickup_behaviors_node.py file: ```rosrun pick_up_objects_task pickup_behaviors_node.py```
 
-Additionally, a launch file named `pick_up_objects_task.launch` is also included. Launch it and run the `pickup_behaviors.py` node to play the behavior tree that executes the autonomous task.
-
-
-## Work to be done
-
-Define a behavior tree to complete the task at hand. Once the behavior tree is being approved by your lab assistant, implement it using ROS and `py_trees`. Despite there is a `py_trees` implementation for ROS1, here, we propose you to use the standard `py_trees` library and add by hand any necessary call to ROS services, publishers or subscribers. However, feel free to use whatever package is more convininent for you.
-
-## Extra bonus
-
-You can override the `turtlebot_controller_node.py` by the path planning controller that you developed in the first lab. If you do that, you should be able to execute the task in the `turtlebot3_stage_3.world`. Modify the launch file [turtlebot3_stage.launch](./launch/turtlebot3_stage.launch) to include this world.
+Task 2: Map with obstacles (with the path planning controller that running RRT algorithm to find path)
+1. Clone repository `turtlebot_online_path_planning` from [here](https://github.com/LeoPhamVN/turtlebot_online_path_planning.git) as a package in the src folder.
+2. Launch the pick up objects task 2 launch file present in the launch folder: ```roslaunch pick_up_objects_task pick_up_objects_task_2.launch```
+3. Run the pickup_behaviors_node.py file: ```rosrun pick_up_objects_task pickup_behaviors_node.py```
 
 
-## Deliverable 
+**To Visualise the Tree, Path other markers, add the markers in rviz**
 
-Deliver a zip file containing these package completed. For the [pick_up_objects_task](https://github.com/narcispr/pick_up_objects_task) package replace or complete the current `README.md` file with:
+## Implementation 
 
-* The name of all group members (max. 2)
-* If it is required to install some package, detailed instructions of how to do it.
-* Detailed instructions of how to execute the task (i.e., launch file, rosrun nodes, ...).
-* A figure of the behavior tree you have implemented.
-* An explanation of the behavior tree used and how each behavior have been implemented.
-* A video of the task execution.
-* Problems found.
-* Conclusions
+The code is organized mainly in three files the [ROS Node](src/pickup_behaviors_node) file, [manage objects helper file](src/manage_objects_node.py) and [turtlebot controller helper file](src/turtlebot_controller_node.py)
 
----
+### Planning Objective
+The main goal of this project is to develop a behavior tree planning a sequence of behaviors need to be done to achieve the picking objects task. The Pick up behaviors node, developed for this purpose.
 
-## WARNING:
+This behavior tree has following behaviors:
 
-We encourage you to help or ask your classmates for help, but the direct copy of a lab will result in a failure (with a grade of 0) for all the students involved. 
+<img src="imgs/behavior_tree.png" width="1000"/>
 
-It is possible to use functions or parts of code found on the internet only if they are limited to a few lines and correctly cited (a comment with a link to where the code was taken from must be included). 
+### Check number of points less than N_points (length of points list)
 
-**Deliberately copying entire or almost entire works will not only result in the failure of the laboratory but may lead to a failure of the entire course or even to disciplinary action such as temporal or permanent expulsion of the university.** [Rules of the evaluation and grading process for UdG students.](https://tinyurl.com/54jcp2vb)
+It checks the number of points in the list, which were travelled to by the robot. If it is less than N_points, the behavior return `True`. Meanwhile, if it is equal or greater than N_points, return `False`. 
 
----
+### Check number of collected objects less than N_objects (number of objects on the map)
 
-<sup>
-Narcis Palomeras - 
-Last review March 2024.
-</sup>
+It checks the number of collected objects. If it is less than N_objects, the behavior return `True`. Meanwhile, if it is equal or greater than N_objects, return `False`.
+
+### Set Point
+
+This behavior sets the next point location the robot need to travel to based on number of points the robot already went to. The robot goes to each point in the list sequencely. Then, number of travelled points will increase one. Finally, return `True`. 
+
+### Move to Point
+
+The robot move to the point *x*, *y* location in the point list. This behavior is provided by the node [pickup_behavior_node.py](./src/pickup_behaviors_node.py) from this package. To be more specific, this behavior publishes the *x*, *y* location, then compares subcribed position of the robot to the target position as an ending condition. If this distance is less than 0.35, return `True`, otherwise, return `False`.
+
+### Check Object
+
+This behavior runs a service `check_object` provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is close to the robot and `True` plus the object's name if an object is close to it. If it returns `True`, number of collected objects will increase 1.
+
+### Get Object
+
+This behavior run a service `get_object` provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is close to the robot and `True` if an object is close to it. It also moves this object over the robot.
+
+### Move to Destination
+
+The robot move to the destination *x*, *y* location, where robot will leave object and depends on object type. This behavior is provided by the node [pickup_behavior_node.py](./src/pickup_behaviors_node.py) from this package. To be more specific, this behavior publishes the *x*, *y* location, then compares subcribed position of the robot to the target position as an ending condition. If this distance is less than 0.35, return `True`, otherwise, return `False`.
+
+### Let Object
+This behavior run a service `let_object` provided by the [manage_objects_node.py](./src/manage_objects_node.py). It returns `False` if no object is over the robot and `True` if an object is over it. It also moves this object to the floor.
+
+## Overall Contribution
+
+The overall contributions of this work can be summarized as follows:
+
+* Behavior tree
+
+## Limitations and Scope for improvements
+
+
+1. ...
+
+
+## Demonstration
+
+A video showing the working of the behavior tree is showed below.
+
+<img src="imgs/pickup_robot.gif" width="700" alt="Funny GIF">
+
