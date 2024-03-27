@@ -31,6 +31,8 @@ The robot has to navigate to a list of points and in each one it has to check if
 
 This package is developed and tested in ROS Noetic on Ubuntu 20.04 machines.
 
+<img src="media/env.png" width="400"/>
+
 ## Setting up
 
 ### Prerequisites

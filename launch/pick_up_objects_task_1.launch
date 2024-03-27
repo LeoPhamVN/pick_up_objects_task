@@ -1,6 +1,6 @@
 <launch>
     <param name="~frame_id" type="string" value="odom" />
-    <include file="$(find pick_up_objects_task)/launch/turtlebot3_stage.launch" /> 
+    <include file="$(find pick_up_objects_task)/launch/turtlebot3_stage_free_map.launch" /> 
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
     <node pkg="pick_up_objects_task" type="manage_objects_node.py" name="manage_objects" args="$(find pick_up_objects_task)" output="screen"/>
     <node pkg="pick_up_objects_task" type="turtlebot_controller_node.py" name="turtlebot_controller"/>
