@@ -120,5 +120,11 @@ The overall contributions of this work can be summarized as follows:
 
 A video showing the working of the behavior tree is showed below.
 
-<img src="imgs/pickup_robot.gif" width="700" alt="Funny GIF">
+Task 1: Map without obstacles
+
+<img src="imgs/pickup_robot_task_1.gif" width="700" alt="Task 1 GIF">
+
+Task 2: Map with obstacles
+
+<img src="imgs/pickup_robot_task_2.gif" width="700" alt="Task 2 GIF">
 
