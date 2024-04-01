@@ -112,8 +112,8 @@ The overall contributions of this work can be summarized as follows:
 
 ## Limitations and Scope for improvements
 
+1. With optional part, we used RRT algorithm to find path. However, in this lab, a laser is used to scan obstacles on the map leading to the robot thinks objects are obstacles and RRT algorithm did not work. To deal with this problem, in the `turtlebot_online_path_planning` package, class `StateValidityChecker`, we added a new method, `set()` which set neighborhood of the goal is 0, after get the occupancy map. It is not a perfect solution, but it is a reasonable answer in this situation. In our point of view, in order to completely resolve the problem, we need to another sensor besides the laser, which allows us to detect objects and update the map.  
 
-1. ...
 
 
 ## Demonstration
